@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from '../../Table';
 import { Player } from '../../../lib/player'
-import playersOld from '../../../../cron/data/players-old.json';
-import playersNew from '../../../../cron/data/players-new.json';
+import playersOld from '../../../../cron/data/players-new.json';
+import playersNew from '../../../../cron/data/players-old.json';
 import timestamp from '../../../../cron/data/timestamp.json';
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime' // import plugin
