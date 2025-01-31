@@ -13,6 +13,7 @@ jobs:
       with:
         node-version: '21.6.1'
     - name: Install project dependencies
+      run: npm install -g yarn
       run: yarn install
       shell: bash
     - name: Load secrets
