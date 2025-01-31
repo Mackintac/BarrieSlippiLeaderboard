@@ -2,20 +2,20 @@ name: Update slippi rankings
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 * * * *"  # Runs every hour
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
       with:
-        node-version: '21.6.1'
-    - name: Install project dependencies
+        node-version: '14'  # Use a stable Node.js version
+    - name: Install Yarn
       run: npm install -g yarn
+    - name: Install project dependencies
       run: yarn install
-      shell: bash
     - name: Load secrets
       run: |
         mkdir -p ./secrets
@@ -23,24 +23,20 @@ jobs:
         ${{ secrets.GOOGLE_CREDS }}
         EOF
       shell: bash
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v2
       continue-on-error: true
       with:
         name: player-data
         path: cron/data/players-new.json
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ github.token }}
-    - name: Load latest player data and deploy to github pages
+    - name: Load latest player data and deploy to GitHub Pages
       run: |
-        git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        git remote set-url origin https://git:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         ./cron/run.sh
       shell: bash
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v2
       with:
         name: player-data
         path: cron/data/players-new.json
         overwrite: true
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ github.token }}
