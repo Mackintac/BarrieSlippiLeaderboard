@@ -33,11 +33,11 @@ jobs:
         github-token: ${{ github.token }}
     - name: Load latest player data and deploy to GitHub Pages
       run: |
-        git remote set-url origin https://git:${{ GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git remote set-url origin https://git:${{ github.token }}@github.com/${{ github.repository }}.git
         ./cron/run.sh
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
     - uses: actions/upload-artifact@v4
       with:
         name: player-data
