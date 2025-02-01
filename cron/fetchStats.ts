@@ -2,16 +2,34 @@ import { getPlayerDataThrottled } from './slippi'
 import * as syncFs from 'fs';
 import * as path from 'path';
 import util from 'util';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import creds from '../secrets/creds.json';
 import * as settings from '../settings'
+import { JWT } from 'google-auth-library';
 
 import { exec } from 'child_process';
 const fs = syncFs.promises;
 const execPromise = util.promisify(exec);
 
+type PlayersRowData = {
+  rank: number;
+  connectCode: string;
+  name: string;
+  rating: number;
+  gamesPlayed: number;
+  wins: number;
+  ladderPoints: number;
+}
+
 const getPlayerConnectCodes = async (): Promise<string[]> => {
   return ['MACK#891', 'YNGC#780', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572']
 };
 
+const googleAuth = new JWT({
+  email: creds.client_email,
+  key: creds.private_key,
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+})
 
 const getPlayers = async () => {
   const codes = await getPlayerConnectCodes()
@@ -26,6 +44,93 @@ const getPlayers = async () => {
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
 }
 
+const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
+  const doc = new GoogleSpreadsheet( settings.spreadsheetID, googleAuth);
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0]; // Assuming the data is in the first sheet
+  const rows = await sheet.getRows<PlayersRowData>();
+  return rows.map(row => ({
+    rank: row.rank,
+    connectCode: row.connectCode,
+    name: row.name,
+    rating: row.rating,
+    gamesPlayed: row.gamesPlayed,
+    wins: row.wins,
+    ladderPoints: row.ladderPoints,
+  }));
+};
+
+const updateAdditionalPlayerData = async () => {
+  const doc = new GoogleSpreadsheet( settings.spreadsheetID, googleAuth);
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = await sheet.getRows<PlayersRowData>();
+  const newPlayerData = await getPlayers();
+  if (rows.length === 0) {
+
+    for (const player of newPlayerData) {
+
+      await sheet.addRow({
+        rank: player.rankedNetplayProfile.rank,
+        connectCode: player.connectCode.code,
+        name: player.displayName,
+        rating: player.rankedNetplayProfile.ratingOrdinal,
+        gamesPlayed: player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses,
+        wins: player.rankedNetplayProfile.wins,
+        ladderPoints: 0,
+      });
+    }
+    console.log('Initial player data populated.');
+    return;
+  } else {
+    console.log('Spreadsheet currently contains data - skipping initialization...');
+ 
+    const players = rows.reduce((acc, row) => {
+      acc[row.connectCode] = row;
+      return acc;
+    }, {} as Record<string, PlayersRowData>);
+
+    for (const player of newPlayerData) {
+      const existingPlayer = players[player.connectCode.code];
+
+      if (existingPlayer) {
+        // Compare and update fields if necessary
+        if (existingPlayer.name !== player.rankedNetplayProfile.displayName) {
+          existingPlayer.name = player.rankedNetplayProfile.displayName;
+        }
+        if (existingPlayer.rating !== player.rankedNetplayProfile.ratingOrdinal) {
+          existingPlayer.rating = player.rankedNetplayProfile.ratingOrdinal;
+        }
+        if (existingPlayer.gamesPlayed !== player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses) {
+          existingPlayer.gamesPlayed = player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
+        }
+        if (existingPlayer.wins !== player.rankedNetplayProfile.wins) {
+          existingPlayer.wins = player.rankedNetplayProfile.wins;
+        }
+        if (existingPlayer.ladderPoints !== player.rankedNetplayProfile.ladderPoints) {
+          existingPlayer.ladderPoints = player.rankedNetplayProfile.ladderPoints;
+        }
+
+        // Save the updated row
+        await existingPlayer.save();
+      } else {
+        // Add new player if not already in the sheet
+        await sheet.addRow({
+          rank: player.rankedNetplayProfile.rank || 19,
+          connectCode: player.connectCode.code || 'UNKNOWN',
+          name: player.displayName || 'Unknown Player',
+          rating: player.rankedNetplayProfile.ratingOrdinal || 0,
+          gamesPlayed: player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses || 0,
+          wins: player.rankedNetplayProfile.wins || 0,
+          ladderPoints: player.rankedNetplayProfile.ladderPoints || 0,
+        });
+      }
+
+    }
+
+  }
+}
+
 async function main() {
   console.log('Starting player fetch.');
   const players = await getPlayers();
@@ -34,6 +139,23 @@ async function main() {
     return
   }
   console.log('Player fetch complete.');
+  
+  await updateAdditionalPlayerData();
+
+  const additionalData = await getAdditionalPlayerData();
+  const additionalDataMap = additionalData.reduce((acc, player) => {
+    acc[player.connectCode] = player;
+    return acc;
+  }, {} as Record<string, PlayersRowData>);
+
+  // Merge additional data with player data
+  players.forEach(player => {
+    const playerData = additionalDataMap[player.connectCode.code];
+    if (playerData) {
+      player.additionalInfo = playerData.connectCode;
+      console.log(player.additionalData);
+    }
+  });
   // rename original to players-old
   const newFile = path.join(__dirname, 'data/players-new.json')
   const oldFile = path.join(__dirname, 'data/players-old.json')

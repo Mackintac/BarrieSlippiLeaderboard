@@ -26,6 +26,7 @@
     "classnames": "^2.3.1",
     "css-loader": "^6.7.3",
     "dayjs": "^1.11.7",
+    "google-auth-library": "^9.15.1",
     "google-spreadsheet": "^3.3.0",
     "limiter": "^2.1.0",
     "null-loader": "^4.0.1",
