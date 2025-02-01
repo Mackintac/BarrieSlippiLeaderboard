@@ -29,7 +29,7 @@ const googleAuth = new JWT({
   email: creds.client_email,
   key: creds.private_key,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-})
+});
 
 const getPlayers = async () => {
   const codes = await getPlayerConnectCodes()
@@ -45,7 +45,8 @@ const getPlayers = async () => {
 }
 
 const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
-  const doc = new GoogleSpreadsheet( settings.spreadsheetID, googleAuth);
+  const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU', googleAuth);
+  await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0]; // Assuming the data is in the first sheet
   const rows = await sheet.getRows<PlayersRowData>();
@@ -61,12 +62,18 @@ const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
 };
 
 const updateAdditionalPlayerData = async () => {
-  const doc = new GoogleSpreadsheet( settings.spreadsheetID, googleAuth);
+  const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU', googleAuth);
+  await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
   const rows = await sheet.getRows<PlayersRowData>();
   const newPlayerData = await getPlayers();
   if (rows.length === 0) {
+
+    console.log('Spreadsheet is empty. Adding header row and populating with initial data.');
+
+    // Add header row
+    await sheet.setHeaderRow(['rank', 'connectCode', 'name', 'rating', 'gamesPlayed', 'wins', 'ladderPoints']);
 
     for (const player of newPlayerData) {
 
@@ -107,10 +114,9 @@ const updateAdditionalPlayerData = async () => {
         if (existingPlayer.wins !== player.rankedNetplayProfile.wins) {
           existingPlayer.wins = player.rankedNetplayProfile.wins;
         }
-        if (existingPlayer.ladderPoints !== player.rankedNetplayProfile.ladderPoints) {
-          existingPlayer.ladderPoints = player.rankedNetplayProfile.ladderPoints;
-        }
-
+        const addedWins = player.rankedNetplayProfile.wins - existingPlayer.wins;
+        const oldPoints = existingPlayer.ladderPoints;
+        existingPlayer.ladderPoints = oldPoints + (addedWins * (player.rankedNetplayProfile.ratingOrdinal) / 10);
         // Save the updated row
         await existingPlayer.save();
       } else {
@@ -139,7 +145,7 @@ async function main() {
     return
   }
   console.log('Player fetch complete.');
-  
+
   await updateAdditionalPlayerData();
 
   const additionalData = await getAdditionalPlayerData();
