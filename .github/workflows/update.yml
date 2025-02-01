@@ -29,6 +29,7 @@ jobs:
       with:
         name: player-data
         path: cron/data/players-new.json
+        github-token: ${{secrets.GH_PAT }}
     - name: Load latest player data and deploy to GitHub Pages
       run: |
         git remote set-url origin https://git:${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
