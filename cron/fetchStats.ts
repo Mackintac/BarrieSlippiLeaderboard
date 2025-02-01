@@ -22,7 +22,8 @@ type PlayersRowData = {
 }
 
 const getPlayerConnectCodes = async (): Promise<string[]> => {
-  return ['MACK#891', 'YNGC#780', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572']
+  return ['MACK#891', 'YNGC#780', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' 
+  ]
 };
 
 const googleAuth = new JWT({
@@ -111,12 +112,13 @@ const updateAdditionalPlayerData = async () => {
         if (existingPlayer.gamesPlayed !== player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses) {
           existingPlayer.gamesPlayed = player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
         }
+        const addedWins = player.rankedNetplayProfile.wins - existingPlayer.wins;
+        const oldPoints = existingPlayer.ladderPoints;
+
         if (existingPlayer.wins !== player.rankedNetplayProfile.wins) {
           existingPlayer.wins = player.rankedNetplayProfile.wins;
         }
-        const addedWins = player.rankedNetplayProfile.wins - existingPlayer.wins;
-        const oldPoints = existingPlayer.ladderPoints;
-        existingPlayer.ladderPoints = oldPoints + (addedWins * (player.rankedNetplayProfile.ratingOrdinal) / 10);
+        existingPlayer.ladderPoints = oldPoints + ((addedWins * existingPlayer.rating) / 10);
         // Save the updated row
         await existingPlayer.save();
       } else {
