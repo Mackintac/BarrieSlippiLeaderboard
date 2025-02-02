@@ -5,7 +5,7 @@ import util from 'util';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import creds from '../secrets/creds.json';
 import * as settings from '../settings'
-import { JWT } from 'google-auth-library';
+// import { JWT } from 'google-auth-library';
 import { PlayersRowData } from 'src/lib/player';
 
 import { exec } from 'child_process';
@@ -28,11 +28,11 @@ const getPlayerConnectCodes = async (): Promise<string[]> => {
   ]
 };
 
-const googleAuth = new JWT({
-  email: creds.client_email,
-  key: creds.private_key,
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
+// const googleAuth = new JWT({
+//   email: creds.client_email,
+//   key: creds.private_key,
+//   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+// });
 
 const getPlayers = async () => {
   const codes = await getPlayerConnectCodes()
@@ -48,7 +48,7 @@ const getPlayers = async () => {
 }
 
 const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
-  const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU', googleAuth);
+  const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU');
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0]; // Assuming the data is in the first sheet
@@ -66,7 +66,7 @@ const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
 };
 
 const updateAdditionalPlayerData = async () => {
-  const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU', googleAuth);
+  const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU');
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
