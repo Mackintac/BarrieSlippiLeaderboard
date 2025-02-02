@@ -4,6 +4,7 @@ export PATH=$HOME/.nvm/versions/node/v20.16.0/bin/node:$HOME/.yarn/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 source $NVM_DIR/nvm.sh  # Loads nvm so Node.js is available
 
+export SSH_AUTH_SOCK=$(ls /tmp/ssh-*/agent.* | head -n 1)
 eval $(ssh-agent -s)
 ssh-add ~/.sshkeys/eragon
 
