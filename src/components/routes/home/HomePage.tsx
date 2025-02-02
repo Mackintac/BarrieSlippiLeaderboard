@@ -17,12 +17,14 @@ const setCount = (player: Player) => {
 };
 
 const sortAndPopulatePlayers = (players: Player[]) => {
-  players = players.filter((p) => setCount(p)).concat(players.filter((p) => !setCount(p)));
+  // Sort players by ladderPoints in descending order
+  players.sort((a, b) => (b.databaseProfile?.ladderPoints || 0) - (a.databaseProfile?.ladderPoints || 0));
+
+  // Assign ranks based on sorted order
   players.forEach((player: Player, i: number) => {
-    if (setCount(player) > 0) {
-      player.rankedNetplayProfile.rank = i + 1;
-    }
+    player.rankedNetplayProfile.rank = i + 1;
   });
+
   return players;
 };
 

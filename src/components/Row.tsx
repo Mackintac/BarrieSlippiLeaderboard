@@ -49,6 +49,8 @@ export function Row({ player }: Props) {
 
   const playerRank = getRank(player);
   const isActive = playerRank.name !== 'None';
+  const ladderPoints = player.databaseProfile.ladderPoints;
+  const monthlyWins = player.databaseProfile.monthlyWins;
   const totalSets = player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
   const totalGames = (player.rankedNetplayProfile.characters || []).reduce((acc, val)=> acc + val.gameCount, 0);
   const rankChange = getRankChange(player);
@@ -63,8 +65,10 @@ export function Row({ player }: Props) {
         <a className="md:text-xl text-sm max-w-xs text-gray-300 hover:text-gray-500 hover:underline" href={codeToUrlSlug(player.connectCode.code)}>{player.displayName}</a>
         <div className="text-gray-300 text-xs">{player.connectCode.code}</div>
       </td>
+        <td className="md:text-lg text-xs max-w-xs text-gray-300 uppercase">
+          {ladderPoints}
+        </td>
       <td className="md:text-xl text-sm text-gray-900 md:px-6 md:py-4 p-1 whitespace-nowrap text-center">
-
         {playerRank.iconUrl && <div className="flex items-center justify-center">
           <img className="md:h-10 md:w-10 h-6 w-6 drop-shadow" src={playerRank.iconUrl} />
         </div>}
@@ -84,6 +88,9 @@ export function Row({ player }: Props) {
         <span className="text-red-500">{player.rankedNetplayProfile.losses ?? 0}</span>
       </>}
       </td>
+        <td className="md:text-lg text-xs max-w-xs text-gray-300 uppercase">
+          {monthlyWins}
+        </td>
     </tr>
   );
 }
