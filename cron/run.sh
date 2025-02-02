@@ -5,8 +5,7 @@ export NVM_DIR="$HOME/.nvm"
 source $NVM_DIR/nvm.sh  # Loads nvm so Node.js is available
 
 export SSH_AUTH_SOCK=$(ls /tmp/ssh-*/agent.* | head -n 1)
-eval $(ssh-agent -s)
-ssh-add ~/.sshkeys/eragon
+
 
 # Debugging info
 echo "Running at $(date)" >> /home/jake/cron_git.log
@@ -16,7 +15,7 @@ echo "Current user: $(whoami)" >> /home/jake/cron_git.log
 
 cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
 
-git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
+# git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
 
 
 set -e
