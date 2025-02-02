@@ -12,12 +12,5 @@ if [ ! -f cron/logs/log.txt ]; then
   touch cron/logs/log.txt
 fi
 
-# Ensure yarn is available
-if ! command -v yarn &> /dev/null
-then
-    echo "yarn could not be found, installing..."
-    npm install -g yarn
-fi
-
 yarn ts-node cron/fetchStats.ts 2>&1 | tee cron/logs/log.txt
 yarn run deploy -- -u "github-actions-bot <support+actions@github.com>"
