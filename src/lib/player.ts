@@ -14,14 +14,14 @@ interface RankedNetplayProfile {
   characters: CharacterStats[];
 }
 export interface PlayersRowData  {
-  rank: number;
+  rank: string;
   connectCode: string;
   name: string;
-  rating: number;
-  gamesPlayed: number;
-  wins: number;
-  ladderPoints: number;
-  monthlyWins: number;
+  rating: string;
+  gamesPlayed: string;
+  wins: string;
+  ladderPoints: string;
+  monthlyWins: string;
 }
 
 export interface Player {

@@ -57,7 +57,7 @@ module.exports = {
       {
         test: /\.(ts|tsx|js|jsx)$/,
         exclude: /node_modules/,
-        include: [path.resolve(__dirname, './src'), path.resolve(__dirname, './cron')],
+        include: path.join(__dirname, './src'),
         use: 'ts-loader',
       },
       {

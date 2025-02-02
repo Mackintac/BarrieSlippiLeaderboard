@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Table } from '../../Table';
 import { Player, PlayersRowData } from '../../../lib/player';
 import playersOld from '../../../../cron/data/players-old.json';
+import playersDatabase from '../../../../cron/data/players-database.json';
 import playersNew from '../../../../cron/data/players-new.json';
 import timestamp from '../../../../cron/data/timestamp.json';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'; // import plugin
 import * as settings from '../../../../settings';
 import ColoradoFlag from '../../../../images/Flag_of_Colorado.svg';
-import { getAdditionalPlayerData } from '../../../../cron/fetchStats'; // Import the function
 
 dayjs.extend(relativeTime);
 
@@ -18,7 +18,7 @@ const setCount = (player: Player) => {
 
 const sortAndPopulatePlayers = (players: Player[]) => {
   // Sort players by ladderPoints in descending order
-  players.sort((a, b) => (b.databaseProfile?.ladderPoints || 0) - (a.databaseProfile?.ladderPoints || 0));
+  players.sort((a, b) => (Number(b.databaseProfile.ladderPoints) || 0) - (Number(a.databaseProfile.ladderPoints) || 0));
 
   // Assign ranks based on sorted order
   players.forEach((player: Player, i: number) => {
@@ -29,40 +29,24 @@ const sortAndPopulatePlayers = (players: Player[]) => {
 };
 
 export default function HomePage() {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [updateDesc, setUpdateDesc] = useState('');
+  
+const rankedPlayersOld = sortAndPopulatePlayers(playersOld)
+const oldPlayersMap = new Map(
+    rankedPlayersOld.map((p) => [p.connectCode.code, p]));
+  const players = sortAndPopulatePlayers(playersDatabase);
+  players.forEach((p) => {
+    const oldData = oldPlayersMap.get(p.connectCode.code)
+    if(oldData) {
+      p.oldRankedNetplayProfile = oldData.rankedNetplayProfile
+    }
+  })
 
+  // continuously update
+  const updatedAt = dayjs(timestamp.updated);
+  const [updateDesc, setUpdateDesc] = useState(updatedAt.fromNow())
   useEffect(() => {
-    const fetchData = async () => {
-      const additionalData = await getAdditionalPlayerData();
-      const additionalDataMap = additionalData.reduce((acc, player) => {
-        acc[player.connectCode] = player;
-        return acc;
-      }, {} as Record<string, PlayersRowData>);
-
-      const rankedPlayersOld = sortAndPopulatePlayers(playersOld);
-      const oldPlayersMap = new Map(rankedPlayersOld.map((p) => [p.connectCode.code, p]));
-
-      const combinedPlayers = sortAndPopulatePlayers(playersNew).map((p) => {
-        const oldData = oldPlayersMap.get(p.connectCode.code);
-        if (oldData) {
-          p.oldRankedNetplayProfile = oldData.rankedNetplayProfile;
-        }
-        const additionalPlayerData = additionalDataMap[p.connectCode.code];
-        if (additionalPlayerData) {
-          p.databaseProfile = additionalPlayerData;
-        }
-        return p;
-      });
-
-      setPlayers(combinedPlayers);
-    };
-
-    fetchData();
-
-    const updatedAt = dayjs(timestamp.updated);
-    setUpdateDesc(updatedAt.fromNow());
-    const interval = setInterval(() => setUpdateDesc(updatedAt.fromNow()), 1000 * 60);
+    const interval = setInterval(
+      () => setUpdateDesc(updatedAt.fromNow()), 1000*60);
     return () => {
       clearInterval(interval);
     };

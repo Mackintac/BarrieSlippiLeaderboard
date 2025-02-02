@@ -6,21 +6,22 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import creds from '../secrets/creds.json';
 import * as settings from '../settings'
 import { JWT } from 'google-auth-library';
+import { PlayersRowData } from 'src/lib/player';
 
 import { exec } from 'child_process';
 const fs = syncFs.promises;
 const execPromise = util.promisify(exec);
 
-type PlayersRowData = {
-  rank: number;
-  connectCode: string;
-  name: string;
-  rating: number;
-  gamesPlayed: number;
-  wins: number;
-  ladderPoints: number;
-  monthlyWins: number;
-}
+// type PlayersRowData = {
+//   rank: number;
+//   connectCode: string;
+//   name: string;
+//   rating: number;
+//   gamesPlayed: number;
+//   wins: number;
+//   ladderPoints: number;
+//   monthlyWins: number;
+// }
 
 const getPlayerConnectCodes = async (): Promise<string[]> => {
   return ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' 
@@ -46,7 +47,7 @@ const getPlayers = async () => {
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
 }
 
-export const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
+const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
   const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU', googleAuth);
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
@@ -167,21 +168,24 @@ async function main() {
   }, {} as Record<string, PlayersRowData>);
 
   // Merge additional data with player data
-  players.forEach(player => {
-    const playerData = additionalDataMap[player.connectCode.code];
-    if (playerData) {
-      player.additionalInfo = playerData.connectCode;
-      console.log(player.additionalData);
-    }
-  });
   // rename original to players-old
   const newFile = path.join(__dirname, 'data/players-new.json')
   const oldFile = path.join(__dirname, 'data/players-old.json')
+  const dbFile = path.join(__dirname, 'data/players-database.json')
   const timestamp = path.join(__dirname, 'data/timestamp.json')
 
   await fs.rename(newFile, oldFile)
   console.log('Renamed existing data file.');
   await fs.writeFile(newFile, JSON.stringify(players));
+  players.forEach(player => {
+    const playerData = additionalDataMap[player.connectCode.code];
+    if (playerData) {
+      player.databaseProfile = playerData;
+      console.log(player);
+    }
+  });
+  await fs.writeFile(dbFile, JSON.stringify(players));
+
   await fs.writeFile(timestamp, JSON.stringify({updated: Date.now()}));
   console.log('Wrote new data file and timestamp.');
   const rootDir = path.normalize(path.join(__dirname, '..'))
