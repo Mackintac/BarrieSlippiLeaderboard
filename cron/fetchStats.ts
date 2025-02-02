@@ -19,10 +19,11 @@ type PlayersRowData = {
   gamesPlayed: number;
   wins: number;
   ladderPoints: number;
+  monthlyWins: number;
 }
 
 const getPlayerConnectCodes = async (): Promise<string[]> => {
-  return ['MACK#891', 'YNGC#780', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' 
+  return ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' 
   ]
 };
 
@@ -45,7 +46,7 @@ const getPlayers = async () => {
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
 }
 
-const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
+export const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
   const doc = new GoogleSpreadsheet( '15a_z0DVqGQnvhRiacbm4xWuwrHgBlgtMn0OAk8NJmGU', googleAuth);
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
@@ -59,6 +60,7 @@ const getAdditionalPlayerData = async (): Promise<PlayersRowData[]> => {
     gamesPlayed: row.gamesPlayed,
     wins: row.wins,
     ladderPoints: row.ladderPoints,
+    monthlyWins: row.monthlyWins,
   }));
 };
 
@@ -74,7 +76,7 @@ const updateAdditionalPlayerData = async () => {
     console.log('Spreadsheet is empty. Adding header row and populating with initial data.');
 
     // Add header row
-    await sheet.setHeaderRow(['rank', 'connectCode', 'name', 'rating', 'gamesPlayed', 'wins', 'ladderPoints']);
+    await sheet.setHeaderRow(['rank', 'connectCode', 'name', 'rating', 'gamesPlayed', 'wins', 'ladderPoints', 'monthlyWins']);
 
     for (const player of newPlayerData) {
 
@@ -86,6 +88,7 @@ const updateAdditionalPlayerData = async () => {
         gamesPlayed: player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses,
         wins: player.rankedNetplayProfile.wins,
         ladderPoints: 0,
+        monthlyWins: 0,
       });
     }
     console.log('Initial player data populated.');
@@ -112,13 +115,19 @@ const updateAdditionalPlayerData = async () => {
         if (existingPlayer.gamesPlayed !== player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses) {
           existingPlayer.gamesPlayed = player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
         }
+
         const addedWins = player.rankedNetplayProfile.wins - existingPlayer.wins;
-        const oldPoints = existingPlayer.ladderPoints;
+        const oldPoints: number = Number(existingPlayer.ladderPoints);
+        const oldWins: number = Number(existingPlayer.monthlyWins);
+
+
 
         if (existingPlayer.wins !== player.rankedNetplayProfile.wins) {
           existingPlayer.wins = player.rankedNetplayProfile.wins;
         }
-        existingPlayer.ladderPoints = oldPoints + ((addedWins * existingPlayer.rating) / 10);
+        existingPlayer.ladderPoints = Math.trunc(Number(oldPoints + ((addedWins * existingPlayer.rating) / 10)));
+        existingPlayer.monthlyWins = Number(oldWins + addedWins);
+
         // Save the updated row
         await existingPlayer.save();
       } else {
@@ -131,6 +140,7 @@ const updateAdditionalPlayerData = async () => {
           gamesPlayed: player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses || 0,
           wins: player.rankedNetplayProfile.wins || 0,
           ladderPoints: player.rankedNetplayProfile.ladderPoints || 0,
+          monthlyWins: 0,
         });
       }
 

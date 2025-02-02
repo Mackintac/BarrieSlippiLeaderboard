@@ -18,10 +18,12 @@ export function Table({ players }: Props) {
       <thead className="bg-gray-800">
         <tr>
           {th('Rank')}
+          {th('Ladder Points')}
           {th('Player')}
           {th('Rating')}
           {th(isSm ? 'Characters': 'Char')}
           {th('W/L')}
+          {th('Monthly Wins')}
         </tr>
       </thead>
       {players.length > 0 &&
