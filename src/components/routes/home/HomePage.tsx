@@ -18,7 +18,7 @@ const setCount = (player: Player) => {
 
 const sortAndPopulatePlayers = (players: Player[]) => {
   // Sort players by ladderPoints in descending order
-  players.sort((a, b) => (Number(b.databaseProfile.ladderPoints) || 0) - (Number(a.databaseProfile.ladderPoints) || 0));
+  players.sort((a, b) => (Number(b.databaseProfile?.ladderPoints) || 0) - (Number(a.databaseProfile?.ladderPoints) || 0));
 
   // Assign ranks based on sorted order
   players.forEach((player: Player, i: number) => {
