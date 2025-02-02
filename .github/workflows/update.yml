@@ -2,7 +2,7 @@ name: Update slippi rankings
 
 on:
   schedule:
-    - cron: "0 * * * *"  # Runs every hour
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,11 +12,10 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: '18.12.0'  # Use a stable Node.js version
-    - name: Install Yarn
-      run: npm install -g yarn
+        node-version: '21.6.1'
     - name: Install project dependencies
       run: yarn install
+      shell: bash
     - name: Load secrets
       run: |
         mkdir -p ./secrets
@@ -28,10 +27,12 @@ jobs:
       continue-on-error: true
       with:
         name: player-data
-        path: cron/data/players-old.json
-    - name: Load latest player data and deploy to GitHub Pages
+        path: cron/data/players-new.json
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ github.token }}
+    - name: Load latest player data and deploy to github pages
       run: |
-        git remote set-url origin https://git:${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
+        git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
         ./cron/run.sh
       shell: bash
       env:
@@ -41,3 +42,5 @@ jobs:
         name: player-data
         path: cron/data/players-new.json
         overwrite: true
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ github.token }}
