@@ -1,8 +1,9 @@
 #!/bin/bash -l
 source $HOME/.bashrc  # or ~/.bash_profile if using macOS
-export PATH=$HOME/.yarn/bin:$PATH
+export PATH=$HOME/.nvm/versions/node/v20.16.0/bin/node:$HOME/.yarn/bin:$PATH
+export NVM_DIR="$HOME/.nvm"
+source $NVM_DIR/nvm.sh  # Loads nvm so Node.js is available
 cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
-yarn start
 
 set -e
 DIR_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
