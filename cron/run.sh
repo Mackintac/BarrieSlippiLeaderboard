@@ -16,6 +16,9 @@ echo "Current user: $(whoami)" >> /home/jake/cron_git.log
 
 cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
 
+git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
+
+
 set -e
 DIR_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$DIR_PATH/.." 
