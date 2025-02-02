@@ -3,6 +3,16 @@ source $HOME/.bashrc  # or ~/.bash_profile if using macOS
 export PATH=$HOME/.nvm/versions/node/v20.16.0/bin/node:$HOME/.yarn/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 source $NVM_DIR/nvm.sh  # Loads nvm so Node.js is available
+
+eval $(ssh-agent -s)
+ssh-add ~/.sshkeys/eragon
+
+# Debugging info
+echo "Running at $(date)" >> /home/jake/cron_git.log
+echo "SSH_AUTH_SOCK: $SSH_AUTH_SOCK" >> /home/jake/cron_git.log
+echo "Git remote: $(git remote -v)" >> /home/jake/cron_git.log
+echo "Current user: $(whoami)" >> /home/jake/cron_git.log
+
 cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
 
 set -e

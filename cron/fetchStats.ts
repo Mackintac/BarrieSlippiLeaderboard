@@ -181,7 +181,6 @@ async function main() {
     const playerData = additionalDataMap[player.connectCode.code];
     if (playerData) {
       player.databaseProfile = playerData;
-      console.log(player);
     }
   });
   await fs.writeFile(dbFile, JSON.stringify(players));
