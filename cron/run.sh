@@ -1,4 +1,9 @@
 #!/bin/bash -l
+source $HOME/.bashrc  # or ~/.bash_profile if using macOS
+export PATH=$HOME/.yarn/bin:$PATH
+cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
+yarn start
+
 set -e
 DIR_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$DIR_PATH/.." 
