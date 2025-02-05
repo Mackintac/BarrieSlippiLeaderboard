@@ -24,7 +24,7 @@ const execPromise = util.promisify(exec);
 // }
 
 const getPlayerConnectCodes = async (): Promise<string[]> => {
-  return ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' , 'DERE#250'
+  return ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' , 'DERE#250', 'TIME#343'
   ]
 };
 
