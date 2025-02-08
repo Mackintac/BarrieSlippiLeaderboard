@@ -4,7 +4,7 @@ export PATH=$HOME/.nvm/versions/node/v20.16.0/bin/node:$HOME/.yarn/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 source $NVM_DIR/nvm.sh  # Loads nvm so Node.js is available
 
-export SSH_AUTH_SOCK=$(ls /tmp/ssh-*/agent.20515 | head -n 1)
+export SSH_AUTH_SOCK=$(ls /tmp/ssh-*/agent.* | head -n 1)
 
 
 # Debugging info
@@ -15,7 +15,7 @@ echo "Current user: $(whoami)" >> /home/jake/cron_git.log
 
 cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
 
-git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
+# git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
 
 
 set -e
