@@ -15,7 +15,7 @@ echo "Current user: $(whoami)" >> /home/jake/cron_git.log
 
 cd /home/jake/dev/barrieMelee/BarrieSlippiLeaderboard
 
-# git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
+git remote set-url origin git@github.com:Mackintac/BarrieSlippiLeaderboard.git
 
 
 set -e
