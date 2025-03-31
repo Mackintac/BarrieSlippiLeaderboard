@@ -23,10 +23,8 @@ const execPromise = util.promisify(exec);
 //   monthlyWins: number;
 // }
 
-const getPlayerConnectCodes = async (): Promise<string[]> => {
-  return ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154','LORD#522','ERIC#108','KEFO#405' , 'DERE#250', 'TIME#343', 'SOMA#385' 
-  ]
-};
+const getPlayerConnectCodes: string[] = ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154', 'LORD#522', 'ERIC#108', 'KEFO#405', 'DERE#250', 'TIME#343', 'SOMA#385'];
+
 
 // const googleAuth = new JWT({
 //   email: creds.client_email,
@@ -35,7 +33,7 @@ const getPlayerConnectCodes = async (): Promise<string[]> => {
 // });
 
 const getPlayers = async () => {
-  const codes = await getPlayerConnectCodes()
+  const codes = getPlayerConnectCodes;
   console.log(`Found ${codes.length} player codes`)
   const allData = codes.map(code => getPlayerDataThrottled(code))
   const results = await Promise.all(allData.map(p => p.catch(e => e)));
