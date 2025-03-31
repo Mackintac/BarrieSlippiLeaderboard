@@ -36,11 +36,15 @@ const getPlayers = async () => {
   const codes = getPlayerConnectCodes;
   console.log(`Found ${codes.length} player codes`)
   const allData = codes.map(code => getPlayerDataThrottled(code))
+  console.log(allData);
   const results = await Promise.all(allData.map(p => p.catch(e => e)));
+  console.log(results);
   const validResults = results.filter(result => !(result instanceof Error));
+  console.log(validResults);
   const unsortedPlayers = validResults
     .filter((data: any) => data?.data?.getConnectCode?.user)
     .map((data: any) => data.data.getConnectCode.user);
+  console.log(unsortedPlayers);
   return unsortedPlayers.sort((p1, p2) =>
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
 }
