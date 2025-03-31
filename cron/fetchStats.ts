@@ -34,17 +34,17 @@ const getPlayerConnectCodes: string[] = ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG
 
 const getPlayers = async () => {
   const codes = getPlayerConnectCodes;
-  console.log(`Found ${codes.length} player codes`)
+  // console.log(`Found ${codes.length} player codes`)
   const allData = codes.map(code => getPlayerDataThrottled(code))
-  console.log("allData: ----- ", allData);
+  // console.log("allData: ----- ", allData);
   const results = await Promise.all(allData.map(p => p.catch(e => e)));
-  console.log("results: ----- ", results[0][0]);
+  // console.log("results: ----- ", results[0][0]);
   const validResults = results.filter(result => !(result instanceof Error));
-  console.log('validResults', validResults);
+  // console.log('validResults', validResults);
   const unsortedPlayers = validResults
     .filter((data: any) => data?.data?.getConnectCode?.user)
     .map((data: any) => data.data.getConnectCode.user);
-  console.log('unsortedPlayers', unsortedPlayers);
+  // console.log('unsortedPlayers', unsortedPlayers);
   return unsortedPlayers.sort((p1, p2) =>
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
 }
