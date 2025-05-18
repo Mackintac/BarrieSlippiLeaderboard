@@ -1,4 +1,4 @@
-import { getPlayerDataThrottled } from './slippi'
+import { getPlayerData, getPlayerDataThrottled } from './slippi'
 import * as syncFs from 'fs';
 import * as path from 'path';
 import util from 'util';
@@ -30,20 +30,20 @@ const getPlayerConnectCodes: string[] = ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG
 //   email: creds.client_email,
 //   key: creds.private_key,
 //   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-// });
+// });j
 
 const getPlayers = async () => {
   const codes = getPlayerConnectCodes;
-  // console.log(`Found ${codes.length} player codes`)
+  console.log(`Found ${codes.length} player codes`)
   const allData = codes.map(code => getPlayerDataThrottled(code))
   // console.log("allData: ----- ", allData);
   const results = await Promise.all(allData.map(p => p.catch(e => e)));
-  // console.log("results: ----- ", results[0][0]);
+  // console.log("results: ----- ", results[0]);
   const validResults = results.filter(result => !(result instanceof Error));
   // console.log('validResults', validResults);
   const unsortedPlayers = validResults
-    .filter((data: any) => data?.data?.getConnectCode?.user)
-    .map((data: any) => data.data.getConnectCode.user);
+    .filter((data: any) => data?.data?.getUser)
+    .map((data: any) => data.data.getUser);
   // console.log('unsortedPlayers', unsortedPlayers);
   return unsortedPlayers.sort((p1, p2) =>
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
@@ -155,6 +155,7 @@ const updateAdditionalPlayerData = async () => {
 async function main() {
   console.log('Starting player fetch.');
   const players = await getPlayers();
+
   if(!players.length) {
     console.log('Error fetching player data. Terminating.')
     return
