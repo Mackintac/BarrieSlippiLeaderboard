@@ -2,7 +2,7 @@ name: Update Slippi Rankings
 
 on:
   schedule:
-    - cron: "*/10 * * * *"  # Runs every 5 minutes
+    - cron: "*/10 * * * *"  # Runs every 10 minutes
   workflow_dispatch:       # Manual trigger
 
 jobs:
@@ -18,11 +18,6 @@ jobs:
 
     - name: Install project dependencies
       run: yarn install
-
-    - name: Load Google creds secret
-      run: |
-        mkdir -p ./secrets
-        echo "${{ secrets.GOOGLE_CREDS }}" > ./secrets/creds.json
 
     - name: Prepare data folder
       run: |
