@@ -32,6 +32,7 @@ jobs:
     - name: Fetch stats and deploy to GitHub Pages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDS }}
       run: |
         yarn ts-node cron/fetchStats.ts
         git config user.name "github-actions[bot]"
