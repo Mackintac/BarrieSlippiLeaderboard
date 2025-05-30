@@ -1,46 +1,47 @@
-name: Update slippi rankings
+name: Update Slippi Rankings
 
 on:
   schedule:
-    - cron: "0 * * * *"
-  workflow_dispatch:
+    - cron: "*/10 * * * *"  # Runs every 5 minutes
+  workflow_dispatch:       # Manual trigger
 
 jobs:
   update:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
-        node-version: '21.6.1'
+        node-version: '20.x'  # Use LTS or match your local env
+
     - name: Install project dependencies
       run: yarn install
-      shell: bash
-    - name: Load secrets
+
+    - name: Load Google creds secret
       run: |
         mkdir -p ./secrets
-        cat << EOF > ./secrets/creds.json
-        ${{ secrets.GOOGLE_CREDS }}
-        EOF
-      shell: bash
-    - uses: actions/download-artifact@v4
-      continue-on-error: true
-      with:
-        name: player-data
-        path: cron/data/players-new.json
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ github.token }}
-    - name: Load latest player data and deploy to github pages
+        echo "${{ secrets.GOOGLE_CREDS }}" > ./secrets/creds.json
+
+    - name: Prepare data folder
       run: |
-        git remote set-url origin https://git:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
-        ./cron/run.sh
-      shell: bash
+        mkdir -p cron/data
+        [ -f cron/data/players-new.json ] || echo '[]' > cron/data/players-new.json
+
+    - name: Fetch stats and deploy to GitHub Pages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/upload-artifact@v4
+      run: |
+        yarn ts-node cron/fetchStats.ts
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        yarn run deploy -- -u "github-actions-bot <support+actions@github.com>"
+
+    - name: Upload updated player data (artifact)
+      uses: actions/upload-artifact@v4
       with:
         name: player-data
         path: cron/data/players-new.json
         overwrite: true
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ github.token }}
