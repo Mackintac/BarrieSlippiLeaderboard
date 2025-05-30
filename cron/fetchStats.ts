@@ -3,6 +3,8 @@ import * as syncFs from 'fs';
 import * as path from 'path';
 import util from 'util';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+console.log('GOOGLE_CREDS length:', process.env.GOOGLE_CREDS?.length);
+console.log('GOOGLE_CREDS snippet:', process.env.GOOGLE_CREDS?.slice(0, 100));
 const creds = JSON.parse(process.env.GOOGLE_CREDS!);
 import * as settings from '../settings'
 // import { JWT } from 'google-auth-library';
