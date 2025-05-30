@@ -3,16 +3,16 @@ import * as syncFs from 'fs';
 import * as path from 'path';
 import util from 'util';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-console.log('GOOGLE_CREDS length:', process.env.GOOGLE_CREDS?.length);
-console.log('GOOGLE_CREDS snippet:', process.env.GOOGLE_CREDS?.slice(0, 100));
-// const creds = JSON.parse(process.env.GOOGLE_CREDS!);
-console.log('GOOGLE_CREDS length:', process.env.GOOGLE_CREDS2?.length);
-console.log('GOOGLE_CREDS snippet:', process.env.GOOGLE_CREDS2?.slice(0, 100));
-const creds = JSON.parse(process.env.GOOGLE_CREDS2!);
 import * as settings from '../settings'
 import { PlayersRowData } from 'src/lib/player';
-
 import { exec } from 'child_process';
+
+console.log('GOOGLE_CREDS length:', process.env.GOOGLE_CREDS?.length);
+console.log('GOOGLE_CREDS snippet:', process.env.GOOGLE_CREDS?.slice(0, 100));
+const rawCreds = process.env.GOOGLE_CREDS!;
+const fixedCredsStr = rawCreds.replace(/\\n/g, '\n');  
+const creds = JSON.parse(fixedCredsStr);
+
 const fs = syncFs.promises;
 const execPromise = util.promisify(exec);
 
