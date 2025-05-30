@@ -3,7 +3,7 @@ import * as syncFs from 'fs';
 import * as path from 'path';
 import util from 'util';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import creds from '../secrets/creds.json';
+const creds = JSON.parse(process.env.GOOGLE_CREDS!);
 import * as settings from '../settings'
 // import { JWT } from 'google-auth-library';
 import { PlayersRowData } from 'src/lib/player';
