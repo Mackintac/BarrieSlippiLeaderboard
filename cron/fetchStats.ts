@@ -5,9 +5,11 @@ import util from 'util';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 console.log('GOOGLE_CREDS length:', process.env.GOOGLE_CREDS?.length);
 console.log('GOOGLE_CREDS snippet:', process.env.GOOGLE_CREDS?.slice(0, 100));
-const creds = JSON.parse(process.env.GOOGLE_CREDS!);
+// const creds = JSON.parse(process.env.GOOGLE_CREDS!);
+console.log('GOOGLE_CREDS length:', process.env.GOOGLE_CREDS2?.length);
+console.log('GOOGLE_CREDS snippet:', process.env.GOOGLE_CREDS2?.slice(0, 100));
+const creds = JSON.parse(process.env.GOOGLE_CREDS2!);
 import * as settings from '../settings'
-import { JWT } from 'google-auth-library';
 import { PlayersRowData } from 'src/lib/player';
 
 import { exec } from 'child_process';
@@ -28,11 +30,6 @@ const execPromise = util.promisify(exec);
 const getPlayerConnectCodes: string[] = ['MACK#891', 'PENN#0', 'SHAD#749', 'BAGG#730', 'TOMB#572', 'ISLE#369', 'AUX#397', 'DOL#101', 'PIXZ#154', 'LORD#522', 'ERIC#108', 'KEFO#405', 'DERE#250', 'TIME#343', 'SOMA#385', 'TRSK#673'];
 
 
-const googleAuth = new JWT({
-  email: creds.client_email,
-  key: creds.private_key,
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
 
 const getPlayers = async () => {
   const codes = getPlayerConnectCodes;
