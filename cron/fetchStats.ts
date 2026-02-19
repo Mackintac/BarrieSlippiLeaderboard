@@ -113,6 +113,7 @@ const updateAdditionalPlayerData = async () => {
         if (existingPlayer.name !== player.rankedNetplayProfile.displayName) {
           existingPlayer.name = player.rankedNetplayProfile.displayName;
         }
+
         if (existingPlayer.rating !== player.rankedNetplayProfile.ratingOrdinal) {
           existingPlayer.rating = player.rankedNetplayProfile.ratingOrdinal;
         }
@@ -129,8 +130,25 @@ const updateAdditionalPlayerData = async () => {
         if (existingPlayer.wins !== player.rankedNetplayProfile.wins) {
           existingPlayer.wins = player.rankedNetplayProfile.wins;
         }
-        existingPlayer.ladderPoints = Math.trunc(Number(oldPoints + ((addedWins * existingPlayer.rating) / 10)));
-        existingPlayer.monthlyWins = Number(oldWins + addedWins);
+
+
+
+        const updatedLadderPoints = Math.trunc(Number(oldPoints + ((addedWins * existingPlayer.rating) / 10)));
+        const updatedMonthlyWins = Number(oldWins + addedWins); 
+        
+        // Stops ladder points from going into the negatives
+        if (updatedLadderPoints < 0) {
+          existingPlayer.ladderPoints = 0; 
+        } else {
+          existingPlayer.ladderPoints = updatedLadderPoints;
+        }
+
+        // Stops monthly wins from going into the negatives
+        if (updatedMonthlyWins < 0) {
+          existingPlayer.monthlyWins = 0;
+        } else {
+          existingPlayer.monthlyWins = updatedMonthlyWins;
+        }
 
         // Save the updated row
         await existingPlayer.save();
