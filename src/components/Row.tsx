@@ -1,4 +1,3 @@
-import React from 'react';
 import { Player } from '../lib/player'
 import { getRank } from '../lib/ranks'
 import { Characters } from './Characters'

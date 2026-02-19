@@ -3,7 +3,7 @@ import { Table } from '../../Table';
 import { Player, PlayersRowData } from '../../../lib/player';
 import playersOld from '../../../../cron/data/players-old.json';
 import playersDatabase from '../../../../cron/data/players-database.json';
-import playersNew from '../../../../cron/data/players-new.json';
+// import playersNew from '../../../../cron/data/players-new.json';
 import timestamp from '../../../../cron/data/timestamp.json';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'; // import plugin
@@ -12,9 +12,9 @@ import BarrieMeleeLogo from '../../../../images/BarrieMeleeLogo.png';
 
 dayjs.extend(relativeTime);
 
-const setCount = (player: Player) => {
-  return player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
-};
+// const setCount = (player: Player) => {
+//   return player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
+// };
 
 const sortAndPopulatePlayers = (players: Player[]) => {
 
