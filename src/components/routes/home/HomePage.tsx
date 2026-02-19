@@ -8,7 +8,7 @@ import timestamp from '../../../../cron/data/timestamp.json';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'; // import plugin
 import * as settings from '../../../../settings';
-import ColoradoFlag from '../../../../images/Flag_of_Colorado.svg';
+import BarrieMeleeLogo from '../../../../images/BarrieMeleeLogo.png';
 
 dayjs.extend(relativeTime);
 
@@ -17,6 +17,7 @@ const setCount = (player: Player) => {
 };
 
 const sortAndPopulatePlayers = (players: Player[]) => {
+
   // Sort players by ladderPoints in descending order
   players.sort((a, b) => (Number(b.databaseProfile?.ladderPoints) || 0) - (Number(a.databaseProfile?.ladderPoints) || 0));
 
@@ -54,12 +55,12 @@ const oldPlayersMap = new Map(
 
   return (
     <div className="flex flex-col items-center h-screen p-8">
-      <img className="h-48" src={ColoradoFlag} alt="colorado flag" />
+      <img className="h-48" src={BarrieMeleeLogo} alt="Barrie Melee Logo" />
       <h1 className="text-3xl m-4 text-center text-white">{settings.title}</h1>
       <div className="p-1 text-gray-300"> Updated {updateDesc}</div>
       <Table players={players} />
       <div className="p-4 text-gray-300 flex flex-col">
-        <div>Built by blorppppp</div>
+        <div>Original Fork built by blorppppp | Buy him a coffee because this project wouldn't exist without his original idea.</div>
         <div>
           <a
             href="https://www.buymeacoffee.com/blorppppp"
